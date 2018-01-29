@@ -1,4 +1,11 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Inward_List]    Script Date: 29/01/2018 8:54:13 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 25/01/2018
 -- Description:	Appointment Stock Inward List
@@ -9,7 +16,7 @@
 
 -- =============================================
 
-CREATE PROCEDURE [Stock].[usp_Appointment_Stock_Inward_List]
+ALTER PROCEDURE [Stock].[usp_Appointment_Stock_Inward_List]
 @stoneid AS stock.STONEID READONLY,
 @is_rfid AS BIT=0
 AS 
@@ -43,16 +50,18 @@ BEGIN
 	view_appointment_stones.issue_carat,
 	view_appointment_stones.packet_rate,
 	view_appointment_stones.visit_id,
-    CABIN_NAME + ' ' + SECTION_NAME AS cabin_section_name,
+    next_cabin_name ,
+	next_section_name ,
 	kam_short,
-	next_cabin_section_name,
 	packet_rate*issue_carat AS packet_amount
 	FROM @tmpstoneid AS StoneId
 		LEFT JOIN stock.view_appointment_stones on view_appointment_stones.stoneid = StoneId.STONEID AND view_appointment_stones.stone_issue_datetime IS NOT NULL AND view_appointment_stones.stone_received_datetime IS NULL
 		LEFT JOIN stock.view_Appointment_Stone_Details ON view_Appointment_Stone_Details.VISIT_ID = view_appointment_stones.visit_id
 		AND view_Appointment_Stone_Details.stoneid = view_appointment_stones.stoneid
 		OUTER APPLY (
-					SELECT TOP 1 CABIN_NAME + ' ' + SECTION_NAME AS next_cabin_section_name
+					SELECT TOP 1 
+					cabin_name next_cabin_name,
+					section_name next_section_name
 					FROM Stock.VISIT_DETAIL
 						LEFT JOIN Stock.VISIT on VISIT.VISIT_ID=Stock.VISIT_DETAIL.VISIT_ID
 						LEFT JOIN Stock.VISIT_STONE_PRIORITY ON VISIT_STONE_PRIORITY.VISIT_ID=Stock.VISIT_DETAIL.VISIT_ID
