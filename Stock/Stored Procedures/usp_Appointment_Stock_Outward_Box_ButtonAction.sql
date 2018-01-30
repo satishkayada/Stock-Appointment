@@ -1,4 +1,14 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]    Script Date: 30/01/2018 12:45:42 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 24/01/2018
 -- Description:	Use to Work on Button 
@@ -8,7 +18,6 @@
 --)
 
 -- =============================================
-
 CREATE PROC [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]
 @visit_id INT,
 @Visit_Id_stoneId stock.VISIT_ID_STONEID READONLY,
@@ -90,3 +99,5 @@ BEGIN
 		WHERE 1=1
     End
 End
+GO
+

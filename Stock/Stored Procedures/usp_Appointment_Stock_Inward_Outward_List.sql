@@ -9,7 +9,7 @@
 
 -- =============================================
 
-Create PROC [Stock].[usp_Appointment_Stock_Inward_Outward_List]
+Alter PROC [Stock].[usp_Appointment_Stock_Inward_Outward_List]
 AS
 BEGIN
         DECLARE @Today AS DATE= dbo.SOL_GetISTDATETIME();
@@ -17,7 +17,7 @@ BEGIN
 
 		SELECT *
 		FROM Stock.VISIT_STONES_FOR_NEXTCABIN StoneId
-			OUTER APPLY (
+			outer apply (
 							SELECT 
 							ROW_NUMBER() OVER (ORDER BY priority_no DESC,visit_start_time)  AS rno,
 							view_appointment_stones.visit_id,

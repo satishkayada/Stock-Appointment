@@ -1,4 +1,12 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_List]    Script Date: 30/01/2018 12:32:29 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 25/01/2018
 -- Description:	Appointment Stock Outward Box Wise List
@@ -10,7 +18,7 @@
 --is_rfId Parameter Speicfy that stoneId Table Variable Pass rfid List
 -- =============================================
 
-CREATE PROC [Stock].[usp_Appointment_Stock_Outward_Box_List]
+ALTER PROC [Stock].[usp_Appointment_Stock_Outward_Box_List]
 @StoneId AS Stock.STONEID READONLY,
 @is_rfid BIT=0
 AS
@@ -60,3 +68,6 @@ BEGIN
 		ORDER BY party_name
 				
 END;
+
+
+

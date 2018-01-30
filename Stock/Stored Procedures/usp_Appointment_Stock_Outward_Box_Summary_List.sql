@@ -1,4 +1,15 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_Summary_List]    Script Date: 30/01/2018 12:44:18 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 25/01/2018
 -- Description:	Appointment Stock Outward Header Count 
@@ -37,3 +48,8 @@ AS
                 LEFT JOIN Packet.STONE_DETAILS ON STONE_DETAILS.stoneid = VISIT_DETAIL.STONEID
         WHERE   VISIT_DATE = @Today;
     END;
+
+
+
+GO
+

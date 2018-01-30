@@ -1,4 +1,15 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_UpdateStatus]    Script Date: 30/01/2018 12:44:46 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 26/01/2018
 -- Description:	To Update Status of Stone Id Visit Id Wise
@@ -63,3 +74,6 @@ BEGIN
 		JOIN Stock.VISIT_DETAIL ON VISIT_DETAIL.STONEID = VISIT_ID_STONEID.STONEID AND VISIT_DETAIL.VISIT_ID = VISIT_ID_STONEID.VISIT_ID
 	WHERE VISIT_DETAIL.VISIT_ID IS NOT null
 END
+
+GO
+

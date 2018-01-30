@@ -1,4 +1,13 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Inward_Update]    Script Date: 30/01/2018 12:38:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 25/01/2018
 -- Description:	Appointment Stock Inward Save
@@ -15,7 +24,7 @@
 --			  that packet 
 -- =============================================
 
-CREATE PROCEDURE [Stock].[usp_Appointment_Stock_Inward_Update]
+ALTER PROCEDURE [Stock].[usp_Appointment_Stock_Inward_Update]
 @visit_id_stoneid AS stock.visit_id_stoneid READONLY,
 @action_name AS VARCHAR(16),
 @apps_code TINYINT=0,
@@ -127,3 +136,6 @@ BEGIN
 		RAISERROR(@msg,18,1)
 	END CATCH
 END
+
+
+

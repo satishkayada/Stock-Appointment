@@ -10,11 +10,11 @@
 
 -- =============================================
 
-CREATE PROC [Stock].[usp_Appointment_Stock_Outward_UpdateStatus]
+Alter PROC [Stock].[usp_Appointment_Stock_Outward_UpdateStatus]
 @visit_id INT,
-@stoneId stock.STONEID READONLY,
-@Status_Code TINYINT,
-@stone_Id AS VARCHAR(16)='',
+@stoneid stock.STONEID READONLY,
+@status_code TINYINT,
+@stone_id AS VARCHAR(16)='',
 @apps_code TINYINT=0,
 @modified_by SMALLINT=0,
 @modified_iplocation_id INT=0

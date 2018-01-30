@@ -1,4 +1,14 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_ButtonAction]    Script Date: 30/01/2018 12:55:11 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 24/01/2018
 -- Description:	Use to Work on Button For Box Wise
@@ -9,10 +19,10 @@
 
 -- =============================================
 
-CREATE PROC [Stock].[usp_Appointment_Stock_Outward_ButtonAction]
+Alter PROC [Stock].[usp_Appointment_Stock_Outward_ButtonAction]
 @visit_id INT,
-@stoneId stock.STONEID READONLY,
-@ButtonName AS VARCHAR(30),
+@stoneid stock.STONEID READONLY,
+@action_name AS VARCHAR(30),
 
 @apps_code TINYINT=0,
 
@@ -30,7 +40,7 @@ BEGIN
         
 	END
 
-	IF @ButtonName='removeappointment'
+	IF @action_name='removeappointment'
 	BEGIN
 		DECLARE @VISIT_START_TIME AS TIME
 		SELECT @VISIT_START_TIME=VISIT_START_TIME
@@ -48,7 +58,7 @@ BEGIN
 		Delete Stock.VISIT_DETAIL WHERE VISIT_ID=@visit_id
 		DELETE stock.VISIT WHERE VISIT_ID=@visit_id
     END
-	IF @ButtonName='removestones'
+	IF @action_name='removestones'
 	BEGIN
 		SELECT TOP 1 @stone_Id=STONEID
 		FROM Stock.VISIT_DETAIL
@@ -62,7 +72,7 @@ BEGIN
         END
 		Delete Stock.VISIT_DETAIL WHERE VISIT_ID=@visit_id AND STONEID IN (SELECT STONEID FROM @stoneId)
     END
-	IF @ButtonName='sendtobuyer'
+	IF @action_name='sendtobuyer'
 	BEGIN
 		SELECT TOP 1 @stone_Id=STONEID
 		FROM Stock.VISIT_DETAIL
@@ -102,3 +112,6 @@ BEGIN
 		WHERE visit_id=@visit_id aND visit_detail.stoneid IN (SELECT STONEID FROM @stoneId)
     End
 End
+
+GO
+
