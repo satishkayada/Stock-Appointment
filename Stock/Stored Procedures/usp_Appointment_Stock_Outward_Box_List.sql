@@ -19,7 +19,7 @@ GO
 -- =============================================
 
 ALTER PROC [Stock].[usp_Appointment_Stock_Outward_Box_List]
-@StoneId AS Stock.STONEID READONLY,
+@stoneid AS Stock.STONEID READONLY,
 @is_rfid BIT=0
 AS
 BEGIN
