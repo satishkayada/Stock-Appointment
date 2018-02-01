@@ -95,7 +95,7 @@ BEGIN
 				) as stone
 
 			UNION ALL
-
+--Conflit
 			select  tab_name,
 					stoneid.stoneid parastoneid, stone.rno ,
 											stone.visit_id ,
