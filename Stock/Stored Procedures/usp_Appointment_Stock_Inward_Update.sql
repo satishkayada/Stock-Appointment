@@ -1,4 +1,4 @@
-﻿USE [srk_db]
+﻿/USE [srk_db]
 GO
 /****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Inward_Update]    Script Date: 30/01/2018 12:38:53 PM ******/
 SET ANSI_NULLS ON

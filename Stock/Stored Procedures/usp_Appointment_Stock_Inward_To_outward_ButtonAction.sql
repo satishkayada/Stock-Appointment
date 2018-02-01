@@ -21,7 +21,7 @@ GO
 -- =============================================
 Alter PROC [Stock].[usp_Appointment_Stock_Inward_To_Outward_Box_ButtonAction]
 @visit_id INT,
-@Visit_Id_stoneId stock.VISIT_ID_STONEID READONLY,
+@Visit_id_stoneId stock.VISIT_ID_STONEID READONLY,
 @action_name AS VARCHAR(30),
 
 @apps_code TINYINT=0,
