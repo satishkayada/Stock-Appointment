@@ -22,7 +22,7 @@ GO
 
 -- =============================================
 
-Alter PROC [Stock].[usp_Appointment_Stock_Inward_To_outward_Box_UpdateStatus]
+ALTER PROC [Stock].[usp_Appointment_Stock_Inward_To_outward_Box_UpdateStatus]
 @visit_id_stoneId stock.VISIT_ID_STONEID READONLY,
 @status_Code TINYINT,
 @apps_code TINYINT=0,
