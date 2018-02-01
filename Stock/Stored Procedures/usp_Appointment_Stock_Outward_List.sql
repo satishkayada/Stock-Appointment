@@ -1,10 +1,19 @@
-﻿-- =============================================
+﻿USE [srk_db]
+GO
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_List]    Script Date: 01/02/2018 9:03:36 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
 -- Author:		Satish Kayada
 -- Create date: 23/01/2018
 -- Description:	Inward outWard Summary of Visit List
 -- =============================================
 
-CREATE PROC [Stock].[usp_Appointment_Stock_Outward_List]
+ALTER PROC [Stock].[usp_Appointment_Stock_Outward_List]
 @visit_id INT
 AS 
 BEGIN
@@ -18,7 +27,7 @@ BEGIN
 	END
 	Declare @guarantor AS VARCHAR(20)= 'guarantor';
 
-	SELECT
+	Select
 	visit.visit_id,
 	visit.party_code,
 	sales.party_master.party_name
@@ -26,11 +35,12 @@ BEGIN
 	,guarantor.party_name guarantorname
 	,visitcontact.visit_contacts_id
 	,party_contacts_kam_code
-	,user_master.user_name AS kam
+	,user_master.user_short_name AS kam_short
 	,cabinDetail.cabin_name
-	,cabinDetail.sectionname
+	,cabinDetail.section_name
 	,cabinDetail.visit_date
-	,section_slot_from_time  
+	,section_slot_from_time 
+	,section_slot_to_time
 	,stonedetail.total_stones
 	,stonedetail.pending_stones
 	,allocated_stones
@@ -76,9 +86,10 @@ BEGIN
 		OUTER APPLY (
 						SELECT TOP 1 VISIT_DETAIL.VISIT_ID,Stock.VISIT_DETAIL.SECTION_ID,
 						CABIN_MASTER.cabin_name,
-						SECTION_NAME sectionname,
+						SECTION_NAME section_name,
 						VISIT.VISIT_DATE,
-						Stock.VISIT_DETAIL.SECTION_SLOT_FROM_TIME  
+						Stock.VISIT_DETAIL.SECTION_SLOT_FROM_TIME , 
+						Stock.VISIT_DETAIL.SECTION_SLOT_TO_TIME  
 						FROM Stock.VISIT_DETAIL
 							LEFT JOIN Stock.VISIT ON VISIT.VISIT_ID = VISIT_DETAIL.VISIT_ID
 							LEFT JOIN Master.SECTION_MASTER ON SECTION_MASTER.SECTION_ID = VISIT_DETAIL.SECTION_ID
@@ -93,3 +104,6 @@ BEGIN
 		AND stone_issue_datetime IS NULL
 		
 END
+
+
+

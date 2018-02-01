@@ -22,9 +22,9 @@ GO
 
 -- =============================================
 
-CREATE PROC [Stock].[usp_Appointment_Stock_Outward_Box_UpdateStatus]
-@Visit_Id_stoneId stock.VISIT_ID_STONEID READONLY,
-@Status_Code TINYINT,
+Alter PROC [Stock].[usp_Appointment_Stock_Outward_Box_UpdateStatus]
+@visit_id_stoneId stock.VISIT_ID_STONEID READONLY,
+@status_Code TINYINT,
 @apps_code TINYINT=0,
 @modified_by SMALLINT=0,
 @modified_iplocation_id INT=0
@@ -39,7 +39,7 @@ BEGIN
 		SELECT 1
 		FROM (
 				SELECT DISTINCT VISIT_ID
-				FROM @Visit_Id_stoneId
+				FROM @visit_id_stoneId
 			 ) AS VISIT_ID_STONEID
 			 LEFT JOIN Stock.VISIT ON VISIT.VISIT_ID = VISIT_ID_STONEID.VISIT_ID
 		WHERE STOCK.VISIT.VISIT_ID IS NOT NULL
@@ -53,7 +53,7 @@ BEGIN
 	IF EXISTS
     (
 		SELECT VISIT_ID_STONEID.VISIT_ID
-		FROM @Visit_Id_stoneId VISIT_ID_STONEID
+		FROM @visit_id_stoneId VISIT_ID_STONEID
 				LEFT JOIN Stock.VISIT_DETAIL ON VISIT_DETAIL.VISIT_ID = VISIT_ID_STONEID.VISIT_ID
 		WHERE STONE_ISSUE_DATETIME IS NOT NULL
 	)
@@ -70,7 +70,7 @@ BEGIN
 	MODIFIED_DATETIME=DBO.SOL_GetISTDATETIME(),
 	MODIFIED_BY=@modified_by,
 	MODIFIED_IPLOCATION_ID=@modified_iplocation_id
-	FROM @Visit_Id_stoneId VISIT_ID_STONEID
+	FROM @visit_id_stoneId VISIT_ID_STONEID
 		JOIN Stock.VISIT_DETAIL ON VISIT_DETAIL.STONEID = VISIT_ID_STONEID.STONEID AND VISIT_DETAIL.VISIT_ID = VISIT_ID_STONEID.VISIT_ID
 	WHERE VISIT_DETAIL.VISIT_ID IS NOT null
 END

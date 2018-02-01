@@ -1,25 +1,48 @@
+USE [srk_db]
+GO
+/****** Object:  StoredProcedure [Master].[usp_Master_Cabin_Section_Save]    Script Date: 31/01/2018 1:11:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Satish Kayada
+-- Create date: 22/01/2018
+-- Description:	This Procedure use to Save Cabin And Section Detail
 
+-- [Master].[TMP_CABIN_SLOT_MASTER] AS TABLE(
+--	[cabin_slot_id] [tinyint] NULL,
+--	[cabin_code] [tinyint] NULL,
+--	[schedule_code] [smallint] NULL,
+--	[is_active] [bit] NULL
+--)
 
-Alter PROC usp_Master_CabinTable_Save
-@time_slots_code tinyint ,
-@time_interval_code tinyint,
-@future_booking_day tinyint,
-@is_active bit,
+--CREATE TYPE [Master].[TMP_SECTION_MASTER_WITHKAMLIST] AS TABLE(
+--	[cabin_code] [tinyint] NULL,
+--	[section_id] [tinyint] NULL,
+--	[section_name] [varchar](32) NULL,
+--	[is_active] [bit] NULL,
+--	[kamid_List] [varchar](200) NULL,
+--	[kamidRemove_List] [varchar](200) NULL
+--)
 
-@cabin_code tinyint,
-@cabin_name varchar(32),
+-- =============================================
 
-@comment_id int=null,
-@comment varchar(512)=null,
+ALTER PROCEDURE [Master].[usp_Master_Cabin_Section_Save]
 
-@tmp_cabin_slot_master Master.tmp_cabin_slot_master READONLY,	
-@tmp_section_master_withkamlist Master.tmp_section_master_withkamlist READONLY,
-
+@cabin_code TINYINT,
+@cabin_name VARCHAR(32),
+@future_booking_day TINYINT,
+@is_active BIT,
+@time_slots_code TINYINT ,
+@time_interval_code TINYINT,
+@remark_id INT=	NULL,
+@remark VARCHAR(512)=NULL,
 @apps_code TINYINT=0,
-
 @modified_by SMALLINT=0,
-@modified_iplocation_id INT=0
-
+@modified_iplocation_id INT=0,
+@tmp_cabin_slot_master Master.tmp_cabin_slot_master READONLY,
+@tmp_section_master_withkamlist Master.tmp_section_master_withkamlist READONLY
 AS 
 BEGIN
 	
@@ -29,8 +52,8 @@ BEGIN
 	SELECT *
 	FROM @tmp_section_master_withkamlist
 
-
 	DECLARE @msg AS VARCHAR(256)
+
 	--------------------------------------------------------------------------------
 	-- variable for max value
 	--------------------------------------------------------------------------------
@@ -59,7 +82,7 @@ BEGIN
 			SET @msg='Section information Already Exists and Paramter have not pass Slot ID';
 			RAISERROR(@msg,18,1);
 			RETURN;
-        End
+        END
 	END
 	-- Search if Cabin code is Zero Which means Cabin Entry Done First Time so i need to search Cabin Code
 	-- At First Time operation You have to pass 0 cabin code so two user simultaneously add cabin.
@@ -124,31 +147,31 @@ BEGIN
 		  		cabin_slot_master.schedule_code as schedule_code,
 		  		cabin_slot_master.is_active as is_active ,
 				Master.Fn_GetISTDATETIME(),
-				@modified_by,
+				@modified_by ,
 				@modified_iplocation_id
 		  From @tmp_cabin_slot_master cabin_slot_master
 		  WHERE ISNULL(cabin_slot_master.cabin_slot_id,0)=0
 
 		----****************************************************************************
 		-----------------------------------------------------------------------------------------
-		----for comments
+		----for remarks
 		-----------------------------------------------------------------------------------------
 		
 		----------------------------------------------------------------------------------------------------------
-		----comment id not found than insert
+		----remark id not found than insert
 		----------------------------------------------------------------------------------------------------------
 		
-		IF (@comment is not null)
+		IF (@remark_id is null)
 		BEGIN
 			INSERT INTO [STOCK].[REMARKS](REMARK_TEXT,SOURCE_ID,REMARK_TYPE_CODE,CREATED_DATETIME,CREATED_BY,CREATED_IPLOCATION_ID)
-			VALUES(@comment,@cabin_code,MASTER.getRemarkCode('cabin_remark'),Master.Fn_GetISTDATETIME(),@modified_by,@modified_iplocation_id)
+			VALUES(@remark,@cabin_code,MASTER.getRemarkCode('cabin_remark'),Master.Fn_GetISTDATETIME(),@modified_by,@modified_iplocation_id)
 		END
-		ELSE --if comment id found
+		ELSE --if remark id found
 		BEGIN
 			UPDATE [STOCK].[REMARKS]
-			SET  REMARK_TEXT=@comment,
+			SET  REMARK_TEXT=@remark,
 			MODIFIED_DATETIME=Master.Fn_GetISTDATETIME(),MODIFIED_BY=@modified_by,MODIFIED_IPLOCATION_ID=@modified_iplocation_id
-			WHERE SOURCE_ID=@cabin_code AND REMARK_ID=@comment_id
+			WHERE SOURCE_ID=@cabin_code AND REMARK_ID=@remark_id
 		END
 
 		--------------------------------------------------------------------------------
@@ -213,7 +236,8 @@ BEGIN
 				  CREATED_BY,
 				  CREATED_IPLOCATION_ID
 				)
-		SELECT CAST(row_number() over (order by TmpSec.section_id) + @MAX_RULE_ID as int) as Rule_Code,
+		SELECT 
+		 CAST(ROW_NUMBER() OVER (ORDER BY TmpSec.section_id) + @MAX_RULE_ID AS INT) AS Rule_Code,
 		 i.Value AS user_code,
 		 TmpSec.section_id,
 		 TmpSec.is_active AS IsActive,
@@ -222,7 +246,7 @@ BEGIN
 		 @modified_by,
 		 @modified_iplocation_id
 		FROM @lactmp_section_master TmpSec
-			cross apply dbo.split(TmpSec.kamid_List, ',') i
+			CROSS APPLY dbo.split(TmpSec.kamid_List, ',') i
 		WHERE NOT EXISTS(
 							SELECT 1 
 							FROM Master.KAM_VISIT_RULES_MASTER Kam
@@ -243,10 +267,10 @@ BEGIN
 					TmpSec.section_id,
 					TmpSec.is_active AS IsActive
 				FROM @lactmp_section_master TmpSec
-					cross apply dbo.split(TmpSec.kamid_List, ',') i
+					CROSS APPLY dbo.split(TmpSec.kamid_List, ',') i
 			) AS tmpSec ON tmpSec.section_id = KAM_VISIT_RULES_MASTER.SECTION_ID AND tmpSec.user_code = KAM_VISIT_RULES_MASTER.USER_CODE
 		WHERE ISNULL(KAM_VISIT_RULES_MASTER.IS_ACTIVE,0)=0
-		AND tmpSec.user_code IS NOT null
+		AND tmpSec.user_code IS NOT NULL
 
 
 		UPDATE Master.KAM_VISIT_RULES_MASTER 
@@ -262,29 +286,17 @@ BEGIN
 					TmpSec.section_id,
 					TmpSec.is_active AS IsActive
 				FROM @lactmp_section_master TmpSec
-					cross apply dbo.split(TmpSec.kamidRemove_List, ',') i
+					CROSS APPLY dbo.split(TmpSec.kamidRemove_List, ',') i
 			) AS tmpSec ON tmpSec.section_id = KAM_VISIT_RULES_MASTER.SECTION_ID AND tmpSec.user_code = KAM_VISIT_RULES_MASTER.USER_CODE
 		WHERE ISNULL(KAM_VISIT_RULES_MASTER.IS_ACTIVE,0)=1
-		AND tmpSec.user_code IS NOT null
+		AND tmpSec.user_code IS NOT NULL
 
 	COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		Rollback Transaction
+		ROLLBACK TRANSACTION
 		SELECT  @msg =ERROR_MESSAGE()
 		RAISERROR(@msg,18,1)
 	END CATCH
 
-End
-
-
-	 
-
-
- 
-
-
-
-
-
- 
+END

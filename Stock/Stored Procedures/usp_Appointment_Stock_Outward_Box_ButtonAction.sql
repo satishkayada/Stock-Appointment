@@ -18,10 +18,10 @@ GO
 --)
 
 -- =============================================
-CREATE PROC [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]
+Alter PROC [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]
 @visit_id INT,
 @Visit_Id_stoneId stock.VISIT_ID_STONEID READONLY,
-@ButtonName AS VARCHAR(30),
+@action_name AS VARCHAR(30),
 
 @apps_code TINYINT=0,
 
@@ -32,7 +32,7 @@ BEGIN
 	DECLARE @msg AS VARCHAR(256)
 	DECLARE @stone_Id AS VARCHAR(16)
 
-	IF @ButtonName='removestones'
+	IF @action_name='removestones'
 	BEGIN
 		SELECT TOP 1 @stone_Id=VISIT_DETAIL.STONEID
 		FROM Stock.VISIT_DETAIL
@@ -53,7 +53,7 @@ BEGIN
 				AND Visit_Id_stoneId.STONEID=VISIT_DETAIL .STONEID
 				)
     END
-	IF @ButtonName='sendtobuyer'
+	IF @action_name='sendtobuyer'
 	BEGIN
 		SELECT TOP 1 @stone_Id=VISIT_DETAIL.STONEID
 		FROM Stock.VISIT_DETAIL
@@ -89,7 +89,9 @@ BEGIN
 		WHERE 1=1
 
 		UPDATE PACKET.STONE_DETAILS
-		SET PACKET.STONE_DETAILS.SECTION_ID=Stock.VISIT_DETAIL.SECTION_ID,
+		SET 
+		PACKET.STONE_DETAILS.SECTION_ID=Stock.VISIT_DETAIL.SECTION_ID,
+		PACKET.STONE_DETAILS.VISIT_ID=Visit_Id_stoneId.visit_id,
 		MODIFIED_DATETIME=Master.Fn_GetISTDATETIME(),
 		MODIFIED_BY=@modified_by,
 		MODIFIED_IPLOCATION_ID=@modified_iplocation_id

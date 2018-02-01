@@ -19,7 +19,9 @@ AS
 BEGIN
 
 	DECLARE @CurrentTime AS TIME
+
 	DECLARE @DayEndTime AS Time
+	
 	DECLARE @DurationValue AS INT
 
 	SELECT @DurationValue=DURATION_VALUE

@@ -24,7 +24,7 @@ GO
 --			  that packet 
 -- =============================================
 
-ALTER PROCEDURE [Stock].[usp_Appointment_Stock_Inward_Update]
+Create PROCEDURE [Stock].[usp_Appointment_Stock_Inward_Update]
 @visit_id_stoneid AS stock.visit_id_stoneid READONLY,
 @action_name AS VARCHAR(16),
 @apps_code TINYINT=0,
