@@ -116,8 +116,6 @@ BEGIN
 											stone.packet_rate ,
 											stone.packet_amount
 			from @tmpstoneid stoneid
-		-- Changed From Home Laptop
-
 				CROSS apply (
 								select 
 								CASE WHEN(STONE_DETAILS.memo_date IS NOT NULL AND is_memo_lock=0) THEN 'businessprocess'
