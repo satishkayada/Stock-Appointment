@@ -11,8 +11,8 @@ GO
 
 -- =============================================
 -- Author:		Satish Kayada
--- Create date: 26/01/2018
--- Description:	To Update Status of Stone Id Visit Id Wise
+-- Create date: 01/02/2018
+-- Description:	To Update Status of Stone Id Inward to Outward Tab
 
 
 --CREATE TYPE [Stock].[VISIT_ID_STONEID] AS TABLE(
@@ -22,7 +22,7 @@ GO
 
 -- =============================================
 
-Alter PROC [Stock].[usp_Appointment_Stock_Outward_Box_UpdateStatus]
+Alter PROC [Stock].[usp_Appointment_Stock_Inward_To_outward_Box_UpdateStatus]
 @visit_id_stoneId stock.VISIT_ID_STONEID READONLY,
 @status_Code TINYINT,
 @apps_code TINYINT=0,
@@ -69,7 +69,7 @@ BEGIN
 		WHERE VISIT_STONES_FOR_NEXTCABIN.stoneid IS null
 	)
 	BEGIN
-		SET @msg='Stone Status is Not Buyer Return'
+		SET @msg='Stone Status is Not Buyer Inward To outWard'
 		RAISERROR(@msg,18,1);
 		RETURN;
     END

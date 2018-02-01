@@ -18,7 +18,6 @@ GO
 -- 	[stoneid] [varchar](16) NULL
 -- )
 
-
 -- =============================================
 Alter PROC [Stock].[usp_Appointment_Stock_Inward_To_Outward_Box_ButtonAction]
 @visit_id INT,
