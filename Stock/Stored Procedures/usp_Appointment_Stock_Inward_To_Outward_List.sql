@@ -1,7 +1,7 @@
 ﻿-- =============================================
 -- Author:		Satish Kayada
--- Create date: 25/01/2018
--- Description:	Appointment Stock Outward Box Wise List
+-- Create date: 01/02/2018
+-- Description:	Appointment Stock Outward Box Wise List for Inward outward Page only
 
 --CREATE TYPE [Stock].[STONEID] AS TABLE(
 --	[STONEID] [VARCHAR](16) NULL
@@ -9,7 +9,7 @@
 
 -- =============================================
 
-Alter PROC [Stock].[usp_Appointment_Stock_Inward_Outward_List]
+Alter PROC [Stock].[usp_Appointment_Stock_Inward_To_Outward_List]
 AS
 BEGIN
         DECLARE @Today AS DATE= dbo.SOL_GetISTDATETIME();
