@@ -63,6 +63,7 @@ BEGIN
 			RAISERROR(@msg,18,1);
 			RETURN;
         END
+		
 		Delete Stock.VISIT_DETAIL 
 		WHERE EXISTS (
 				SELECT 1 
