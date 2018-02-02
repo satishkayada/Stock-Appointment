@@ -1,9 +1,5 @@
-﻿USE [srk_db]
-GO
-/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_List]    Script Date: 30/01/2018 12:32:29 PM ******/
+﻿SET QUOTED_IDENTIFIER ON
 SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================n
@@ -25,26 +21,18 @@ GO
 -- =============================================
 
 ALTER PROC [Stock].[usp_Appointment_Stock_Outward_Box_List]
-@stoneid AS Stock.STONEID READONLY,
-@list_name as varchar(15),
-@is_rfid BIT=0
+@rfid_tag AS Stock.rfid_tag READONLY,
+@list_name as varchar(15)
 AS
 BEGIN
-        DECLARE @Today AS DATE= dbo.SOL_GetISTDATETIME();
-        DECLARE @msg AS VARCHAR(256);
-		DECLARE @tmpStoneId AS stock.STONEID
-		IF @is_rfid=1 
-		BEGIN
-			INSERT INTO @tmpStoneId 
-			SELECT STONEID 
-			FROM @StoneId
-		END
-		ELSE
-		BEGIN
-			INSERT INTO @tmpStoneId
-			SELECT *
-			FROM stock.get_stoneid_from_rfd(@StoneId)
-		End
+
+    DECLARE @Today AS DATE= dbo.SOL_GetISTDATETIME();
+    DECLARE @msg AS VARCHAR(256);
+	DECLARE @tmpStoneId AS stock.STONEID
+	INSERT INTO @tmpStoneId
+	SELECT STONEID
+	FROM Packet.STONE_DETAILS
+	WHERE rfid_tag IN (SELECT rfid_tag FROM @rfid_tag)
 	
 	Select *
 	From (
@@ -93,6 +81,7 @@ BEGIN
 								and view_appointment_stones.visit_date=dbo.sol_getistdate()
 								and stone_issue_datetime is null
 				) as stone
+			where  (@list_name='all' or  @list_name='buyercabin')
 
 			UNION ALL
 			select  tab_name,
@@ -159,8 +148,5 @@ BEGIN
 								)
 				) as stone
 			) AS packet
-		where tab_name=@list_name
+		where (tab_name=@list_name or @list_name='' or @list_name='all')
 END;
-
-
-

@@ -32,7 +32,8 @@ AS
 BEGIN
 	DECLARE @msg AS VARCHAR(256)
 	DECLARE @stone_Id AS VARCHAR(16)
-	
+	DECLARE @Servity AS INT
+	DECLARE @level AS INT
     /*
     Put Validation for Stone must be recently return from buyer cabin.
     */
@@ -95,6 +96,9 @@ BEGIN
 			RETURN;
         END
 
+		Begin TRY
+		Begin TRAN
+
 		UPDATE Stock.VISIT_DETAIL
 		SET 
 		STONE_ISSUE_DATETIME=dbo.SOL_GetISTDATETIME(),
@@ -116,6 +120,25 @@ BEGIN
 			JOIN @Visit_Id_stoneId Visit_Id_stoneId ON Visit_Id_stoneId.STONEID = STONE_DETAILS.stoneid 
 			JOIN Stock.VISIT_DETAIL ON Visit_Id_stoneId.VISIT_ID=Stock.VISIT_DETAIL.VISIT_ID AND Visit_Id_stoneId.STONEID=Stock.VISIT_DETAIL.STONEID
 		WHERE 1=1
+
+		Delete
+		From STOCK.VISIT_STONES_FOR_NEXTCABIN
+		wHERE EXISTS(
+						SElect 1
+						From @Visit_Id_stoneId Visit_Id_stoneId
+						Where Visit_Id_stoneId.stoneid=VISIT_STONES_FOR_NEXTCABIN.stoneId
+						And Visit_Id_stoneId.visit_id=VISIT_STONES_FOR_NEXTCABIN.next_visit_id
+					)
+
+		COMMIT TRAN
+		End TRY
+		Begin CATCH
+			ROLLBACK TRANSACTION
+			SET @msg =ERROR_MESSAGE()
+			SET @Servity=ERROR_SEVERITY()
+			SET @level=ERROR_STATE()
+			RAISERROR(@msg,@Servity,@level);
+		End CATCH
     End
 End
 GO
