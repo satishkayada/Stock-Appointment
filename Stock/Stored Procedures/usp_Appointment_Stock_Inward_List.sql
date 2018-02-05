@@ -1,6 +1,6 @@
 ﻿USE [srk_db]
 GO
-/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Inward_List]    Script Date: 29/01/2018 8:54:13 AM ******/
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Inward_List]    Script Date: 03/02/2018 3:44:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10,33 +10,23 @@ GO
 -- Create date: 25/01/2018
 -- Description:	Appointment Stock Inward List
 
---CREATE TYPE [Stock].[STONEID] AS TABLE(
---	[STONEID] [VARCHAR](16) NULL
+--CREATE TYPE [Stock].[RFID_TAG] AS TABLE(
+--	[rfid_tag] [varchar](16) NULL
 --)
 
 -- =============================================
 
 ALTER PROCEDURE [Stock].[usp_Appointment_Stock_Inward_List]
-@stoneid AS stock.STONEID READONLY,
-@is_rfid AS BIT=0
+@rfid_tag AS Stock.RFID_TAG READONLY
 AS 
 BEGIN
 
 	DECLARE @tmpstoneId AS stock.STONEID
-	IF @is_rfid=1
-	BEGIN
-		INSERT INTO @tmpstoneId
-		        ( STONEID )
-		SELECT STONEID
-		FROM stock.get_stoneid_from_rfd(@stoneid)
-    END
-    ELSE
-    BEGIN
-		INSERT INTO @tmpstoneId
-		        ( STONEID )
-		SELECT STONEID
-		FROM @stoneid
-    End
+	INSERT INTO @tmpstoneId
+		    ( STONEID )
+	SELECT STONEID
+	FROM Packet.STONE_DETAILS
+	WHERE rfid_tag IN (SELECT RFID_TAG FROM @rfid_tag)
 
 	declare @msg AS VARCHAR(256)
 	Declare @guarantor AS VARCHAR(20)= 'guarantor';

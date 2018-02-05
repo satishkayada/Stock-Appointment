@@ -1,10 +1,8 @@
 ﻿USE [srk_db]
 GO
-
-/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]    Script Date: 30/01/2018 12:45:42 PM ******/
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]    Script Date: 05/02/2018 9:55:14 AM ******/
 SET ANSI_NULLS ON
 GO
-
 SET QUOTED_IDENTIFIER ON
 GO
 
@@ -13,13 +11,17 @@ GO
 -- Create date: 24/01/2018
 -- Description:	Use to Work on Button 
 
---CREATE TYPE [Stock].[STONEID] AS TABLE(
---	[STONEID] [VARCHAR](16) NULL
+--CREATE TYPE [Stock].[VISIT_ID_STONEID] AS TABLE(
+--	[visit_id] [int] NULL,
+--	[stoneid] [varchar](16) NULL
 --)
 
+--action name
+--removestones
+--sendtobuyer
+
 -- =============================================
-Alter PROC [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]
-@visit_id INT,
+ALTER PROC [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]
 @Visit_id_stoneId stock.VISIT_ID_STONEID READONLY,
 @action_name AS VARCHAR(30),
 
@@ -101,5 +103,3 @@ BEGIN
 		WHERE 1=1
     End
 End
-GO
-

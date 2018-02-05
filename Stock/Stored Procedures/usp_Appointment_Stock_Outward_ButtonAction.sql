@@ -20,7 +20,6 @@ GO
 -- =============================================
 
 Alter PROC [Stock].[usp_Appointment_Stock_Outward_ButtonAction]
-@visit_id INT,
 @stoneid stock.STONEID READONLY,
 @action_name AS VARCHAR(30),
 

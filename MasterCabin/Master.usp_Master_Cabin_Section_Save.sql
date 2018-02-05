@@ -1,10 +1,13 @@
 USE [srk_db]
 GO
-/****** Object:  StoredProcedure [Master].[usp_Master_Cabin_Section_Save]    Script Date: 31/01/2018 1:11:25 PM ******/
+
+/****** Object:  StoredProcedure [Master].[usp_Master_Cabin_Section_Save]    Script Date: 03/02/2018 12:23:12 PM ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- =============================================
 -- Author:		Satish Kayada
 -- Create date: 22/01/2018
@@ -28,7 +31,7 @@ GO
 
 -- =============================================
 
-ALTER PROCEDURE [Master].[usp_Master_Cabin_Section_Save]
+CREATE PROCEDURE [Master].[usp_Master_Cabin_Section_Save]
 
 @cabin_code TINYINT,
 @cabin_name VARCHAR(32),
@@ -118,6 +121,40 @@ BEGIN
 			VALUES(@cabin_code,@cabin_name,@Is_Active,@time_slots_code,@time_interval_code,@future_booking_day,Master.Fn_GetISTDATETIME(),@modified_by,@modified_iplocation_id)
 
 		END
+
+		--------------------------------------------------------------------------------
+		-- For Update Section
+		--------------------------------------------------------------------------------
+		--update active status if working day present in the table
+		  
+		  UPDATE [MASTER].[SECTION_MASTER]  
+		  SET    [MASTER].[SECTION_MASTER].IS_ACTIVE=ISNULL(tmpsection_master.IS_ACTIVE,0),
+				 SECTION_MASTER.MODIFIED_DATETIME=Master.Fn_GetISTDATETIME(),SECTION_MASTER.MODIFIED_BY=@modified_by,SECTION_MASTER.MODIFIED_IPLOCATION_ID=@modified_iplocation_id
+		  FROM   [MASTER].[SECTION_MASTER] SECTION_MASTER
+				INNER JOIN @lactmp_section_master AS tmpsection_master ON tmpsection_master.section_id=SECTION_MASTER.SECTION_ID
+		  WHERE tmpsection_master.section_id=SECTION_MASTER.SECTION_ID
+		  ------------------------------------------------------------------------------------------
+		    --max cabin_slot_id
+		 -----------------------------------------------------------------------------------------
+		  select  @MAX_SECTION_ID = ISNULL(max(SECTION_ID),0) from [MASTER].[SECTION_MASTER] 
+		  select  @MAX_SECTION_CODE = ISNULL(max(SECTION_CODE),0) from [MASTER].[SECTION_MASTER] WHERE CABIN_CODE=@cabin_code
+		  --------------------------------------------------------------------------------------------------------
+		  --if new field add than insert query
+		  --------------------------------------------------------------------------------------------------------
+		  INSERT INTO [MASTER].[SECTION_MASTER](SECTION_ID,CABIN_CODE,SECTION_CODE,SECTION_NAME,IS_ACTIVE,APPS_CODE,CREATED_DATETIME,CREATED_BY,CREATED_IPLOCATION_ID)
+		  SELECT  CAST(row_number() over (order by section_master_WithkamList.section_id) + @MAX_SECTION_ID as int) as cabin_slot_id,
+		  		@cabin_code as cabin_code,
+				CAST(row_number() over (order by section_master_WithkamList.section_id) + @MAX_SECTION_CODE as int),
+				section_master_WithkamList.section_name,
+				section_master_WithkamList.is_active,
+				@apps_code,
+				Master.Fn_GetISTDATETIME(),
+				@modified_by,
+				@modified_iplocation_id
+		  From @lactmp_section_master section_master_WithkamList
+		  WHERE ISNULL(section_master_WithkamList.section_id,0)=0
+
+
 		--************************************************************
 		--------------------------------------------------------------------------------
 		-- For WORKING DAYS
@@ -174,37 +211,6 @@ BEGIN
 			WHERE SOURCE_ID=@cabin_code AND REMARK_ID=@remark_id
 		END
 
-		--------------------------------------------------------------------------------
-		-- For Update Section
-		--------------------------------------------------------------------------------
-		--update active status if working day present in the table
-		  
-		  UPDATE [MASTER].[SECTION_MASTER]  
-		  SET    [MASTER].[SECTION_MASTER].IS_ACTIVE=ISNULL(tmpsection_master.IS_ACTIVE,0),
-				 SECTION_MASTER.MODIFIED_DATETIME=Master.Fn_GetISTDATETIME(),SECTION_MASTER.MODIFIED_BY=@modified_by,SECTION_MASTER.MODIFIED_IPLOCATION_ID=@modified_iplocation_id
-		  FROM   [MASTER].[SECTION_MASTER] SECTION_MASTER
-				INNER JOIN @lactmp_section_master AS tmpsection_master ON tmpsection_master.section_id=SECTION_MASTER.SECTION_ID
-		  WHERE tmpsection_master.section_id=SECTION_MASTER.SECTION_ID
-		  ------------------------------------------------------------------------------------------
-		    --max cabin_slot_id
-		 -----------------------------------------------------------------------------------------
-		  select  @MAX_SECTION_ID = ISNULL(max(SECTION_ID),0) from [MASTER].[SECTION_MASTER] 
-		  select  @MAX_SECTION_CODE = ISNULL(max(SECTION_CODE),0) from [MASTER].[SECTION_MASTER] WHERE CABIN_CODE=@cabin_code
-		  --------------------------------------------------------------------------------------------------------
-		  --if new field add than insert query
-		  --------------------------------------------------------------------------------------------------------
-		  INSERT INTO [MASTER].[SECTION_MASTER](SECTION_ID,CABIN_CODE,SECTION_CODE,SECTION_NAME,IS_ACTIVE,APPS_CODE,CREATED_DATETIME,CREATED_BY,CREATED_IPLOCATION_ID)
-		  SELECT  CAST(row_number() over (order by section_master_WithkamList.section_id) + @MAX_SECTION_ID as int) as cabin_slot_id,
-		  		@cabin_code as cabin_code,
-				CAST(row_number() over (order by section_master_WithkamList.section_id) + @MAX_SECTION_CODE as int),
-				section_master_WithkamList.section_name,
-				section_master_WithkamList.is_active,
-				@apps_code,
-				Master.Fn_GetISTDATETIME(),
-				@modified_by,
-				@modified_iplocation_id
-		  From @lactmp_section_master section_master_WithkamList
-		  WHERE ISNULL(section_master_WithkamList.section_id,0)=0
 
 
 		  UPDATE section_master_withkamlist 
@@ -300,3 +306,6 @@ BEGIN
 	END CATCH
 
 END
+GO
+
+

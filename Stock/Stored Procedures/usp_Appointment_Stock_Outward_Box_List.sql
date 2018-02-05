@@ -7,17 +7,17 @@ GO
 -- Create date: 25/01/2018
 -- Description:	Appointment Stock Outward Box Wise List
 
---CREATE TYPE [Stock].[STONEID] AS TABLE(
---	[STONEID] [VARCHAR](16) NULL
+--CREATE TYPE [Stock].[RFID_TAG] AS TABLE(
+--	[rfid_tag] [varchar](16) NULL
 --)
 
 --action List
+--all
 --buyercabin
 --businessprocess
 --confirm
 --free
 
---is_rfId Parameter Speicfy that stoneId Table Variable Pass rfid List
 -- =============================================
 
 ALTER PROC [Stock].[usp_Appointment_Stock_Outward_Box_List]
