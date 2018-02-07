@@ -1,6 +1,6 @@
 ﻿USE [srk_db]
 GO
-/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]    Script Date: 05/02/2018 9:55:14 AM ******/
+/****** Object:  StoredProcedure [Stock].[usp_Appointment_Stock_Outward_Box_ButtonAction]    Script Date: 05/02/2018 12:53:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -33,6 +33,18 @@ AS
 BEGIN
 	DECLARE @msg AS VARCHAR(256)
 	DECLARE @stone_Id AS VARCHAR(16)
+
+	DECLARE @TMPVISIT_ID AS INT,@TMPSTONEID AS BIGINT
+	SELECT 	@TMPVISIT_ID=VISIT_ID_STONEID.VISIT_ID,
+			@TMPSTONEID=VISIT_ID_STONEID.stoneid
+	FROM @visit_id_stoneId visit_id_stoneId
+		LEFT JOIN Stock.VISIT_DETAIL ON VISIT_DETAIL.VISIT_ID = VISIT_ID_STONEID.VISIT_ID AND VISIT_DETAIL.stoneid= VISIT_ID_STONEID.stoneid
+	WHERE VISIT_DETAIL.VISIT_ID IS NULL
+	IF @TMPVISIT_ID>0 OR @TMPSTONEID>0 
+	BEGIN
+		SET @msg='Stone Id ' + CAST(@TMPSTONEID AS VARCHAR(30)) +' and Visit Id ' + CAST(@TMPVISIT_ID AS VARCHAR(30)) + ' is invalid'
+		RAISERROR(@msg,18,1);
+	END 
 
 	IF @action_name='removestones'
 	BEGIN

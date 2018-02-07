@@ -1,0 +1,21 @@
+SET QUOTED_IDENTIFIER ON
+SET ANSI_NULLS ON
+GO
+ALTER VIEW Packet.view_Stone_Details
+AS
+    SELECT  stone_details.stoneid , issue_carat ,shape_name,
+			cut_short_name ,polish_short_name ,symmetry_short_name ,
+			floro_short_name,certificate_name AS certificate_short_name,clarity_name AS clarity_short_name,
+			color_name AS color_short_name,
+			stone_details.box_rfid,box_rfid_tag,box_name
+    FROM    Packet.STONE_DETAILS stone_details
+            LEFT OUTER JOIN Packet.STONE_LAB_DETAILS stone_lab_details ON stone_lab_details.certificate_code = stone_details.certificate_code
+				AND stone_lab_details.stoneid = stone_details.stoneid
+			LEFT OUTER JOIN Packet.STONE_LAB_DESCRIPTION lDes ON lDes.stoneid = stone_details.stoneid AND lDes.certificate_code = stone_details.certificate_code
+			LEFT JOIN Master.BOX_RFID_MASTER ON 
+				BOX_RFID_MASTER.box_rfid=stone_details.box_rfid
+
+
+GO
+
+
